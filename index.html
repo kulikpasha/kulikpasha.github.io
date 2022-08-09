@@ -123,7 +123,6 @@
             field[x][y].h = 0;
           }
         }
-
         frstclick = { x: -1, y: -1, t: 0, p: 0 };
         table.innerHTML = "";
         renderfield();
@@ -136,6 +135,177 @@
         }
         table.innerHTML = "";
         renderfield();
+      }
+    }
+
+    function checksafety(i, j) {
+      let safe = 1;
+      field[frstclick.x][frstclick.y].t = "&nbsp;";
+      for (let x = i - 1; x > -1; x--) {
+        if (field[x][j].t != "&nbsp;") {
+          if (
+            field[x][j].p != frstclick.p &&
+            (field[x][j].t == "R" || field[x][j].t == "Q")
+          ) {
+            safe = 0;
+          }
+          break;
+        }
+      }
+      for (let x = i + 1; x < 8; x++) {
+        if (field[x][j].t != "&nbsp;") {
+          if (
+            field[x][j].p != frstclick.p &&
+            (field[x][j].t == "R" || field[x][j].t == "Q")
+          ) {
+            safe = 0;
+          }
+        }
+        break;
+      }
+
+      for (let x = j - 1; x > -1; x--) {
+        if (field[i][x].t != "&nbsp;") {
+          if (
+            field[i][x].p != frstclick.p &&
+            (field[i][x].t == "R" || field[i][x].t == "Q")
+          ) {
+            safe = 0;
+          }
+          break;
+        }
+      }
+      for (let x = j + 1; x < 8; x++) {
+        if (field[i][x].t != "&nbsp;") {
+          if (
+            field[i][x].p != frstclick.p &&
+            (field[i][x].t == "R" || field[i][x].t == "Q")
+          ) {
+            safe = 0;
+          }
+          break;
+        }
+      }
+      for (let x = 1; x < 9; x++) {
+        if (i - x > -1 && j - x > -1) {
+          if (field[i - x][j - x].t != "&nbsp;") {
+            if (
+              field[i - x][j - x].p != frstclick.p &&
+              (field[i - x][j - x].t == "B" || field[i - x][j - x].t == "Q")
+            ) {
+              safe = 0;
+            }
+            break;
+          }
+        }
+      }
+      for (let x = 1; x < 9; x++) {
+        if (i - x > -1 && j + x < 8) {
+          if (field[i - x][j + x].t != "&nbsp;") {
+            if (
+              field[i - x][j + x].p != frstclick.p &&
+              (field[i - x][j + x].t == "B" || field[i - x][j + x].t == "Q")
+            ) {
+              safe = 0;
+            }
+            break;
+          }
+        }
+      }
+      for (let x = 1; x < 9; x++) {
+        if (i + x < 8 && j - x > -1) {
+          if (field[i + x][j - x].t != "&nbsp;") {
+            if (
+              field[i + x][j - x].p != frstclick.p &&
+              (field[i + x][j - x].t == "B" || field[i + x][j - x].t == "Q")
+            ) {
+              safe = 0;
+            }
+            break;
+          }
+        }
+      }
+      for (let x = 1; x < 9; x++) {
+        if (i + x < 8 && j + x < 8) {
+          if (field[i + x][j + x].t != "&nbsp;") {
+            if (
+              field[i + x][j + x].p != frstclick.p &&
+              (field[i + x][j + x].t == "B" || field[i + x][j + x].t == "Q")
+            ) {
+              safe = 0;
+            }
+            break;
+          }
+        }
+      }
+      for (let x = 0; x < 8; x++) {
+        if (
+          horseturns[x][0] + i < 8 &&
+          horseturns[x][1] + j < 8 &&
+          horseturns[x][0] + i > -1 &&
+          horseturns[x][1] + j > -1
+        ) {
+          if (field[i + horseturns[x][0]][j + horseturns[x][1]].t == "H") {
+            if (
+              field[i + horseturns[x][0]][j + horseturns[x][1]].p != frstclick.p
+            ) {
+              safe = 0;
+            }
+          }
+        }
+      }
+      if (frstclick.p == "-1") {
+        if (
+          i + 1 < 8 &&
+          j + 1 < 8 &&
+          field[i + 1][j + 1].t == "P" &&
+          field[i + 1][j + 1].p == "1"
+        ) {
+          safe = 0;
+        }
+        if (
+          i + 1 < 8 &&
+          j - 1 > -1 &&
+          field[i + 1][j - 1].t == "P" &&
+          field[i + 1][j - 1].p == "1"
+        ) {
+          safe = 0;
+        }
+      } else {
+        if (
+          i - 1 > -1 &&
+          j + 1 < 8 &&
+          field[i - 1][j + 1].t == "P" &&
+          field[i - 1][j + 1].p == "-1"
+        ) {
+          safe = 0;
+        }
+        if (
+          i - 1 > -1 &&
+          j - 1 > -1 &&
+          field[i - 1][j - 1].t == "P" &&
+          field[i - 1][j - 1].p == "-1"
+        ) {
+          safe = 0;
+        }
+      }
+      for (let x = -1; x < 2; x++) {
+        for (let y = -1; y < 2; y++) {
+          if (i + x < 8 && i + x > -1 && j + y < 8 && j + y > -1) {
+            if (
+              field[i + x][j + y].t == "K" &&
+              field[i + x][j + y].p != frstclick.p
+            ) {
+              safe = 0;
+            }
+          }
+        }
+      }
+      field[frstclick.x][frstclick.y].t = "K";
+      if (safe == 1) {
+        return true;
+      } else {
+        return false;
       }
     }
 
@@ -185,10 +355,19 @@
     function king(i, j) {
       for (let x = -1; x < 2; x++) {
         for (let y = -1; y < 2; y++) {
-          if (i + x < 8 && i + x > -1 && j + y < 8 && j + y > -1) {
+          if (
+            i + x < 8 &&
+            i + x > -1 &&
+            j + y < 8 &&
+            j + y > -1 &&
+            checksafety(i + x, j + y)
+          ) {
             if (field[i + x][j + y].t == "&nbsp;") {
               field[i + x][j + y].h = 1;
-            } else if (field[i + x][j + y].p != frstclick.p) {
+            } else if (
+              field[i + x][j + y].p != frstclick.p &&
+              checksafety(i + x, j + y)
+            ) {
               field[i + x][j + y].h = 3;
             }
           }
