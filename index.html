@@ -46,12 +46,19 @@
     .attack {
       background-color: rgb(216, 8, 8);
     }
+    .castles {
+      background-color: rgb(72, 6, 84);
+    }
   </style>
 
   <script>
     const table = document.createElement("table");
     table.cellPadding = 0;
     table.cellSpacing = 0;
+    wscp = true; //white short castles possible
+    bscp = true; // black short castles possible
+    wlcp = true; //white long castles possible
+    blcp = true; // black long castles possible
     let frstclick = { x: -1, y: -1, t: 0, p: 0 };
     function renderfield() {
       for (let i = 0; i < 8; i++) {
@@ -71,6 +78,9 @@
           }
           if (field[i][j].h == 3) {
             td.classList.add("attack");
+          }
+          if (field[i][j].h == 4) {
+            td.classList.add("castles");
           }
           td.innerHTML = "&nbsp;";
           td.innerHTML = field[i][j].t;
@@ -118,23 +128,22 @@
       if (field[i][j].h == 1 || field[i][j].h == 3) {
         field[i][j] = field[frstclick.x][frstclick.y];
         field[frstclick.x][frstclick.y] = { t: "&nbsp;" };
-        for (let x = 0; x < 8; x++) {
-          for (let y = 0; y < 8; y++) {
-            field[x][y].h = 0;
-          }
-        }
-        frstclick = { x: -1, y: -1, t: 0, p: 0 };
-        table.innerHTML = "";
-        renderfield();
+      } else if (field[i][j].h == 4 && j == 7) {
+        shortcastles(field[i][j].p);
+      } else if (field[i][j].h == 4 && j == 0) {
+        longcastles(field[i][j].p);
       } else {
-        frstclick = { x: -1, y: -1, t: 0, p: 0 };
         for (let x = 0; x < 8; x++) {
           for (let y = 0; y < 8; y++) {
             field[x][y].h = 0;
           }
         }
-        table.innerHTML = "";
-        renderfield();
+      }
+      frstclick = { x: -1, y: -1, t: 0, p: 0 };
+      for (let x = 0; x < 8; x++) {
+        for (let y = 0; y < 8; y++) {
+          field[x][y].h = 0;
+        }
       }
     }
 
@@ -309,6 +318,42 @@
       }
     }
 
+    function shortcastles(player) {
+      if (player == 1) {
+        field[7][6] = { p: 1, t: "K", h: 0 };
+        field[7][5] = { p: 1, t: "R", h: 0 };
+        field[7][4] = { t: "&nbsp;", h: 0 };
+        field[7][7] = { t: "&nbsp;", h: 0 };
+        wscp = false;
+        wlcp = false;
+      }
+      if (player == -1) {
+        field[0][6] = { p: -1, t: "K", h: 0 };
+        field[0][5] = { p: -1, t: "R", h: 0 };
+        field[0][4] = { t: "&nbsp;", h: 0 };
+        field[0][7] = { t: "&nbsp;", h: 0 };
+        bscp = false;
+        blcp = false;
+      }
+    }
+    function longcastles(player) {
+      if (player == 1) {
+        field[7][2] = { p: 1, t: "K", h: 0 };
+        field[7][3] = { p: 1, t: "R", h: 0 };
+        field[7][4] = { t: "&nbsp;", h: 0 };
+        field[7][0] = { t: "&nbsp;", h: 0 };
+        wscp = false;
+        wlcp = false;
+      }
+      if (player == -1) {
+        field[0][2] = { p: -1, t: "K", h: 0 };
+        field[0][3] = { p: -1, t: "R", h: 0 };
+        field[0][4] = { t: "&nbsp;", h: 0 };
+        field[0][0] = { t: "&nbsp;", h: 0 };
+        bscp = false;
+        blcp = false;
+      }
+    }
     // prettier-ignore
     function whitepawn(i, j) {
       if (i - 1 > -1) {
@@ -372,6 +417,18 @@
             }
           }
         }
+      }
+      if (wscp && field[i][j].p == 1) {
+        field[7][7].h = 4;
+      }
+      if (bscp && field[i][j].p == -1) {
+        field[0][7].h = 4;
+      }
+      if (wlcp && field[i][j].p == 1) {
+        field[7][0].h = 4;
+      }
+      if (blcp && field[i][j].p == -1) {
+        field[0][0].h = 4;
       }
     }
     function bishop(i, j) {
