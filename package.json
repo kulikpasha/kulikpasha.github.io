@@ -1,0 +1,24 @@
+{
+  "name": "kulikpasha.github.io",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview" 
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kulikpasha/kulikpasha.github.io.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kulikpasha/kulikpasha.github.io/issues"
+  },
+  "homepage": "https://github.com/kulikpasha/kulikpasha.github.io#readme",
+  "devDependencies": {
+    "vite": "^3.0.7"
+  }
+}
