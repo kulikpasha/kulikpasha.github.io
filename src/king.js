@@ -1,4 +1,3 @@
-import { checkcastles } from "./checkcastlespossibility";
 import { checksafety } from "./utils";
 
 export function king(ctx, i, j) {
@@ -21,8 +20,5 @@ export function king(ctx, i, j) {
         }
       }
     }
-  }
-  if (checkcastles()) {
-    ctx.field[7][7].h = 4;
   }
 }

@@ -6,6 +6,7 @@ import { bishop } from "./bishop";
 import { horse } from "./horse";
 import { queen } from "./queen";
 import { checkcastles } from "./checkcastlespossibility";
+import { printfigure } from "./printfigure";
 const table = document.createElement("table");
 table.cellPadding = 0;
 table.cellSpacing = 0;
@@ -51,8 +52,7 @@ function renderfield() {
       if (ctx.field[i][j].h == 4) {
         td.classList.add("castles");
       }
-      td.innerHTML = "&nbsp;";
-      td.innerHTML = ctx.field[i][j].t;
+      td.innerHTML = printfigure(ctx, i, j);
       if (ctx.field[i][j].p == 1) {
         td.classList.add("playerWhite");
       }
