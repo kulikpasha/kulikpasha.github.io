@@ -131,5 +131,11 @@ function attack(i, j) {
     }
   }
 }
-
+if (window.innerWidth >= window.innerHeight) {
+  table.style.width = document.documentElement.clientHeight;
+  table.style.height = document.documentElement.clientHeight;
+} else if (window.innerHeight > window.innerWidth) {
+  table.style.width = document.documentElement.clientWidth;
+  table.style.height = document.documentElement.clientWidth;
+}
 renderfield();
