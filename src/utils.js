@@ -171,3 +171,111 @@ export function checksafety(ctx, i, j) {
     return false;
   }
 }
+
+export function printfigure(ctx, i, j) {
+  if (ctx.field[i][j].p === 1) {
+    if (ctx.field[i][j].t === "K") {
+      return `<img src="/pic/Wking.png">`;
+    } else if (ctx.field[i][j].t === "R") {
+      return `<img src="/pic/Wrook.png">`;
+    } else if (ctx.field[i][j].t === "B") {
+      return `<img src="/pic/Wbishop.png">`;
+    } else if (ctx.field[i][j].t === "H") {
+      return `<img src="/pic/Whorse.png">`;
+    } else if (ctx.field[i][j].t === "P") {
+      return `<img src="/pic/Wpawn.png">`;
+    } else if (ctx.field[i][j].t === "Q") {
+      return `<img src="/pic/Wqueen.png">`;
+    }
+  } else if (ctx.field[i][j].p === -1) {
+    if (ctx.field[i][j].t === "K") {
+      return `<img src="/pic/Bking.png">`;
+    } else if (ctx.field[i][j].t === "R") {
+      return `<img src="/pic/Brook.png">`;
+    } else if (ctx.field[i][j].t === "B") {
+      return `<img src="/pic/Bbishop.png">`;
+    } else if (ctx.field[i][j].t === "H") {
+      return `<img src="/pic/Bhorse.png">`;
+    } else if (ctx.field[i][j].t === "P") {
+      return `<img src="/pic/Bpawn.png">`;
+    } else if (ctx.field[i][j].t === "Q") {
+      return `<img src="/pic/Bqueen.png">`;
+    }
+  } else {
+    return "&nbsp;";
+  }
+}
+
+export function checkcastles(ctx) {
+  if (ctx.turn == 1 && ctx.field[7][4].m == 0 && checksafety(ctx, 7, 4)) {
+    if (
+      ctx.field[7][7].m == 0 &&
+      ctx.field[7][6].t == "&nbsp;" &&
+      ctx.field[7][5].t == "&nbsp;" &&
+      checksafety(ctx, 7, 6) &&
+      checksafety(ctx, 7, 5)
+    ) {
+      ctx.field[7][7].h = 4;
+    }
+    if (
+      ctx.field[7][0].m == 0 &&
+      ctx.field[7][1].t == "&nbsp;" &&
+      ctx.field[7][2].t == "&nbsp;" &&
+      ctx.field[7][3].t == "&nbsp;" &&
+      checksafety(ctx, 7, 1) &&
+      checksafety(ctx, 7, 2) &&
+      checksafety(ctx, 7, 3)
+    ) {
+      ctx.field[7][0].h = 4;
+    }
+  }
+  if (ctx.turn == -1 && ctx.field[0][4].m == 0 && checksafety(ctx, 0, 4)) {
+    if (
+      ctx.field[0][7].m == 0 &&
+      ctx.field[0][6].t == "&nbsp;" &&
+      ctx.field[0][5].t == "&nbsp;" &&
+      checksafety(ctx, 0, 6) &&
+      checksafety(ctx, 0, 5)
+    ) {
+      ctx.field[0][7].h = 4;
+    }
+    if (
+      ctx.field[0][0].m == 0 &&
+      ctx.field[0][1].t == "&nbsp;" &&
+      ctx.field[0][2].t == "&nbsp;" &&
+      ctx.field[0][3].t == "&nbsp;" &&
+      checksafety(ctx, 0, 1) &&
+      checksafety(ctx, 0, 2) &&
+      checksafety(ctx, 0, 3)
+    ) {
+      ctx.field[0][0].h = 4;
+    }
+  }
+}
+
+export function castles(ctx, j) {
+  if (ctx.turn == 1 && j == 7) {
+    ctx.field[7][6] = { p: 1, t: "K", h: 0 };
+    ctx.field[7][5] = { p: 1, t: "R", h: 0 };
+    ctx.field[7][4] = { t: "&nbsp;", h: 0 };
+    ctx.field[7][7] = { t: "&nbsp;", h: 0 };
+  }
+  if (ctx.turn == -1 && j == 7) {
+    ctx.field[0][6] = { p: -1, t: "K", h: 0 };
+    ctx.field[0][5] = { p: -1, t: "R", h: 0 };
+    ctx.field[0][4] = { t: "&nbsp;", h: 0 };
+    ctx.field[0][7] = { t: "&nbsp;", h: 0 };
+  }
+  if (ctx.turn == 1 && j == 0) {
+    ctx.field[7][2] = { p: 1, t: "K", h: 0 };
+    ctx.field[7][3] = { p: 1, t: "R", h: 0 };
+    ctx.field[7][4] = { t: "&nbsp;", h: 0 };
+    ctx.field[7][0] = { t: "&nbsp;", h: 0 };
+  }
+  if (ctx.turn == -1 && j == 0) {
+    ctx.field[0][2] = { p: -1, t: "K", h: 0 };
+    ctx.field[0][3] = { p: -1, t: "R", h: 0 };
+    ctx.field[0][4] = { t: "&nbsp;", h: 0 };
+    ctx.field[0][0] = { t: "&nbsp;", h: 0 };
+  }
+}

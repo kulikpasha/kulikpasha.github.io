@@ -5,8 +5,7 @@ import { blackpawn } from "./pawns";
 import { bishop } from "./bishop";
 import { horse } from "./horse";
 import { queen } from "./queen";
-import { checkcastles } from "./checkcastlespossibility";
-import { printfigure } from "./printfigure";
+import { printfigure, castles } from "./utils";
 const table = document.createElement("table");
 table.cellPadding = 0;
 table.cellSpacing = 0;
@@ -104,18 +103,18 @@ function wasclick(i, j) {
 }
 
 function attack(i, j) {
-  if (ctx.frstclick.m === 0) {
-    ctx.field[ctx.frstclick.x][ctx.frstclick.y].m = 1;
-  }
   if (ctx.field[i][j].h == 1 || ctx.field[i][j].h == 3) {
+    if (ctx.frstclick.m === 0) {
+      ctx.field[ctx.frstclick.x][ctx.frstclick.y].m = 1;
+    }
     ctx.field[i][j] = ctx.field[ctx.frstclick.x][ctx.frstclick.y];
     ctx.field[ctx.frstclick.x][ctx.frstclick.y] = { t: "&nbsp;" };
     ctx.turn = ctx.turn * -1;
   } else if (ctx.field[i][j].h == 4) {
-    ctx.field[7][6] = { p: 1, t: "K", h: 0 };
-    ctx.field[7][5] = { p: 1, t: "R", h: 0 };
-    ctx.field[7][4] = { t: "&nbsp;", h: 0 };
-    ctx.field[7][7] = { t: "&nbsp;", h: 0 };
+    castles(ctx, j);
+    if (ctx.frstclick.m === 0) {
+      ctx.field[ctx.frstclick.x][ctx.frstclick.y].m = 1;
+    }
   } else {
     for (let x = 0; x < 8; x++) {
       for (let y = 0; y < 8; y++) {
