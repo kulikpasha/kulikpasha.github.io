@@ -115,6 +115,7 @@ function attack(i, j) {
     if (ctx.frstclick.m === 0) {
       ctx.field[ctx.frstclick.x][ctx.frstclick.y].m = 1;
     }
+    ctx.turn = ctx.turn * -1;
   } else {
     for (let x = 0; x < 8; x++) {
       for (let y = 0; y < 8; y++) {
