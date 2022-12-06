@@ -10,6 +10,22 @@ const table = document.createElement("table");
 table.cellPadding = 0;
 table.cellSpacing = 0;
 
+fetch("http://localhost:3000/move", {
+  method: "POST",
+  body: { roomId: 1, playerId: "b", from: "a1", to: "b1" },
+})
+  .then((response) => {
+    const textPromise = response.json();
+
+    console.log("response", response);
+    console.log("textPromise", textPromise);
+
+    return textPromise;
+  })
+  .then((json) => {
+    console.log("json", json);
+  });
+
 // prettier-ignore
 const ctx = {
   turn: 1,
