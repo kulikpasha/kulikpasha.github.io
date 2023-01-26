@@ -4,9 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview" 
+    "dev": "vite && cp -R ./pic ./server/static/pic",
+    "build": "vite build && cp -R ./pic ./server/static/pic"
   },
   "repository": {
     "type": "git",

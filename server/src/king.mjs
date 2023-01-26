@@ -1,4 +1,4 @@
-import { checksafety, checkcastles } from "./utils";
+import { checksafety, checkcastles } from "./utils.mjs";
 export function king(ctx, i, j) {
   for (let x = -1; x < 2; x++) {
     for (let y = -1; y < 2; y++) {

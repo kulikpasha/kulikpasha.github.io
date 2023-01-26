@@ -2,51 +2,115 @@ import express from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
 
-// npm install body-parser
-// npm install cors
+import { king } from "./king.mjs";
+import { rook } from "./rook.mjs";
+import { whitepawn } from "./pawns.mjs";
+import { blackpawn } from "./pawns.mjs";
+import { bishop } from "./bishop.mjs";
+import { horse } from "./horse.mjs";
+import { queen } from "./queen.mjs";
 
 const app = express();
 app.use(bodyParser.json());
 app.use(cors());
 
+app.use(express.static("static"));
+
 const port = 3000;
 
-const rooms = {
-  "id-1": {
-    field: [],
-  },
-  "id-2": {
-    field: [],
-  },
+// prettier-ignore
+const state = {
+  turn: 1,
+  field: [
+    [{p: -1, t: "R", h: 0, m: 0}, {p: -1, t: "H", h: 0},{p: -1, t: "B", h: 0},{p: -1, t: "Q", h: 0},{p: -1, t: "K", h: 0, m: 0},{p: -1, t: "B", h: 0},{p: -1, t: "H", h: 0},{p: -1, t: "R", h: 0, m: 0}],
+    [{p: -1, t: "P", h: 0},{p: -1, t: "P", h: 0},{p: -1, t: "P", h: 0},{p: -1, t: "P", h: 0},{p: -1, t: "P", h: 0},{p: -1, t: "P", h: 0},{p: -1, t: "P", h: 0},{p: -1, t: "P", h: 0}],
+    [{t: "&nbsp;", h: 0}, {t: "&nbsp;", h: 0},{t: "&nbsp;", h: 0},{t: "&nbsp;", h: 0},{t: "&nbsp;", h: 0},{t: "&nbsp;", h: 0},{t: "&nbsp;", h: 0},{t: "&nbsp;", h: 0}],
+    [{t: "&nbsp;", h: 0}, {t: "&nbsp;", h: 0},{t: "&nbsp;", h: 0},{t: "&nbsp;", h: 0},{t: "&nbsp;", h: 0},{t: "&nbsp;", h: 0},{t: "&nbsp;", h: 0},{t: "&nbsp;", h: 0}],
+    [{t: "&nbsp;", h: 0}, {t: "&nbsp;", h: 0},{t: "&nbsp;", h: 0},{t: "&nbsp;", h: 0},{t: "&nbsp;", h: 0},{t: "&nbsp;", h: 0},{t: "&nbsp;", h: 0},{t: "&nbsp;", h: 0}],
+    [{t: "&nbsp;", h: 0}, {t: "&nbsp;", h: 0},{t: "&nbsp;", h: 0},{t: "&nbsp;", h: 0},{t: "&nbsp;", h: 0},{t: "&nbsp;", h: 0},{t: "&nbsp;", h: 0},{t: "&nbsp;", h: 0}],
+    [{p: 1, t: "P", h: 0}, {p: 1, t: "P", h: 0},{p: 1, t: "P", h: 0},{p: 1, t: "P", h: 0},{p: 1, t: "P", h: 0},{p: 1, t: "P", h: 0},{p: 1, t: "P", h: 0},{p: 1, t: "P", h: 0}],
+    [{p: 1, t: "R", h: 0, m: 0}, {p: 1, t: "H", h: 0},{p: 1, t: "B", h: 0},{p: 1, t: "Q", h: 0},{p: 1, t: "K", h: 0, m: 0},{p: 1, t: "B", h: 0},{p: 1, t: "H", h: 0},{p: 1, t: "R", h: 0, m: 0}]
+  ],
+  frstclick: { x: -1, y: -1, t: 0, p: 0 },
+  horseturns: [
+    [2, 1],[2, -1],[-2, 1],[-2, -1],[1, 2],[1, -2],[-1, 2],[-1, -2]
+  ],
 };
 
-let roomId = 1;
-app.get("/join", (req, res) => {
-  const room = createRoom(roomId);
-  roomId++;
-  res.json(room);
+function action(state, i, j) {
+  if (
+    state.frstclick.t == 0 &&
+    state.field[i][j].t != "&nbsp;" &&
+    state.field[i][j].p == state.turn
+  ) {
+    state.frstclick = {
+      x: i,
+      y: j,
+      t: state.field[i][j].t,
+      p: state.field[i][j].p,
+      m: state.field[i][j].m,
+    };
+    state.field[i][j].h = 2;
+    if (state.field[i][j].t == "K") {
+      king(state, i, j);
+    } else if (state.field[i][j].t == "Q") {
+      queen(state, i, j);
+    } else if (state.field[i][j].t == "R") {
+      rook(state, i, j);
+    } else if (state.field[i][j].t == "B") {
+      bishop(state, i, j);
+    } else if (state.field[i][j].t == "P" && state.field[i][j].p == "1") {
+      whitepawn(state, i, j);
+    } else if (state.field[i][j].t == "P" && state.field[i][j].p == "-1") {
+      blackpawn(state, i, j);
+    } else if (state.field[i][j].t == "H") {
+      horse(state, i, j);
+    }
+  } else {
+    attack(state, i, j);
+  }
+}
+
+function attack(state, i, j) {
+  if (state.field[i][j].h == 1 || state.field[i][j].h == 3) {
+    if (state.frstclick.m === 0) {
+      state.field[state.frstclick.x][state.frstclick.y].m = 1;
+    }
+    state.field[i][j] = state.field[state.frstclick.x][state.frstclick.y];
+    state.field[state.frstclick.x][state.frstclick.y] = { t: "&nbsp;" };
+    state.turn = state.turn * -1;
+  } else if (state.field[i][j].h == 4) {
+    castles(state, j);
+    if (state.frstclick.m === 0) {
+      state.field[state.frstclick.x][state.frstclick.y].m = 1;
+    }
+    state.turn = state.turn * -1;
+  } else {
+    for (let x = 0; x < 8; x++) {
+      for (let y = 0; y < 8; y++) {
+        state.field[x][y].h = 0;
+      }
+    }
+  }
+
+  state.frstclick = { x: -1, y: -1, t: 0, p: 0 };
+  for (let x = 0; x < 8; x++) {
+    for (let y = 0; y < 8; y++) {
+      state.field[x][y].h = 0;
+    }
+  }
+}
+
+app.get("/start", (request, response) => {
+  response.json(state);
 });
 
-// /move/100500/b/a1/a2
-
-// app.get("/move/:roomId/:playerId/:from/:to", (req, res) => {
-//     req.params.roomId // "100500"
-//     req.params.playerId // b
-// });
-
-app.post("/move", (req, res) => {
-  req.body.roomId;
-  // do something with room
-  console.log(req.body);
-  res.json(rooms[req.body.roomId]);
-});
-
-app.get("/", (req, res) => {
-  res.send("<h1>Home page</h1>");
-});
-
-app.get("/hello-world", (req, res) => {
-  res.send("<h2>Hello World</h2>");
+app.post("/action", (request, response) => {
+  const body = request.body;
+  const i = body.i;
+  const j = body.j;
+  action(state, i, j);
+  response.json(state);
 });
 
 app.listen(port, () => {
