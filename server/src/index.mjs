@@ -9,6 +9,7 @@ import { blackpawn } from "./pawns.mjs";
 import { bishop } from "./bishop.mjs";
 import { horse } from "./horse.mjs";
 import { queen } from "./queen.mjs";
+import { castles } from "./utils.mjs";
 
 const app = express();
 app.use(bodyParser.json());
