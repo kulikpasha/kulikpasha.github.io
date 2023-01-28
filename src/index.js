@@ -5,15 +5,24 @@ table.cellSpacing = 0;
 
 const BASE_URL = "http://localhost:3000";
 
-function start() {
-  fetch(`${BASE_URL}/start`, { method: "GET" })
-    .then((response) => response.json())
-    .then((state) => {
-      renderfield(state);
-    });
+const ws = new WebSocket("wss://bf43-180-254-226-99.ngrok.io");
+// const ws = new WebSocket("ws://localhost:3000");
+
+ws.addEventListener("open", onWebSocketOpen);
+ws.addEventListener("message", onMessageFromServer);
+
+function onWebSocketOpen(event) {
+  const roomId = prompt("Please enter room id");
+  sendOpenRoom(roomId);
 }
 
-start();
+function onMessageFromServer(event) {
+  const message = JSON.parse(event.data);
+  if (message.type === "next-state") {
+    table.innerHTML = "";
+    renderfield(message.payload.state);
+  }
+}
 
 function renderfield(state) {
   for (let i = 0; i < 8; i++) {
@@ -45,7 +54,7 @@ function renderfield(state) {
         td.classList.add("playerBlack");
       }
       td.onclick = () => {
-        sendAction(i, j);
+        sendNextTurn(i, j);
       };
       tr.appendChild(td);
     }
@@ -61,18 +70,10 @@ function renderfield(state) {
   }
 }
 
-function sendAction(i, j) {
-  fetch(`${BASE_URL}/action`, {
-    method: "POST",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ i, j }),
-  })
-    .then((response) => response.json())
-    .then((nextState) => {
-      table.innerHTML = "";
-      renderfield(nextState);
-    });
+function sendNextTurn(i, j) {
+  ws.send(JSON.stringify({ type: "next-turn", payload: { i, j } }));
+}
+
+function sendOpenRoom(roomId) {
+  ws.send(JSON.stringify({ type: "open-room", payload: { roomId } }));
 }

@@ -1,6 +1,7 @@
 import express from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
+import expressWs from "express-ws";
 
 import { king } from "./king.mjs";
 import { rook } from "./rook.mjs";
@@ -16,29 +17,32 @@ app.use(bodyParser.json());
 app.use(cors());
 
 app.use(express.static("static"));
+expressWs(app);
 
 const port = 3000;
 
-// prettier-ignore
-const state = {
-  turn: 1,
-  field: [
-    [{p: -1, t: "R", h: 0, m: 0}, {p: -1, t: "H", h: 0},{p: -1, t: "B", h: 0},{p: -1, t: "Q", h: 0},{p: -1, t: "K", h: 0, m: 0},{p: -1, t: "B", h: 0},{p: -1, t: "H", h: 0},{p: -1, t: "R", h: 0, m: 0}],
-    [{p: -1, t: "P", h: 0},{p: -1, t: "P", h: 0},{p: -1, t: "P", h: 0},{p: -1, t: "P", h: 0},{p: -1, t: "P", h: 0},{p: -1, t: "P", h: 0},{p: -1, t: "P", h: 0},{p: -1, t: "P", h: 0}],
-    [{t: "&nbsp;", h: 0}, {t: "&nbsp;", h: 0},{t: "&nbsp;", h: 0},{t: "&nbsp;", h: 0},{t: "&nbsp;", h: 0},{t: "&nbsp;", h: 0},{t: "&nbsp;", h: 0},{t: "&nbsp;", h: 0}],
-    [{t: "&nbsp;", h: 0}, {t: "&nbsp;", h: 0},{t: "&nbsp;", h: 0},{t: "&nbsp;", h: 0},{t: "&nbsp;", h: 0},{t: "&nbsp;", h: 0},{t: "&nbsp;", h: 0},{t: "&nbsp;", h: 0}],
-    [{t: "&nbsp;", h: 0}, {t: "&nbsp;", h: 0},{t: "&nbsp;", h: 0},{t: "&nbsp;", h: 0},{t: "&nbsp;", h: 0},{t: "&nbsp;", h: 0},{t: "&nbsp;", h: 0},{t: "&nbsp;", h: 0}],
-    [{t: "&nbsp;", h: 0}, {t: "&nbsp;", h: 0},{t: "&nbsp;", h: 0},{t: "&nbsp;", h: 0},{t: "&nbsp;", h: 0},{t: "&nbsp;", h: 0},{t: "&nbsp;", h: 0},{t: "&nbsp;", h: 0}],
-    [{p: 1, t: "P", h: 0}, {p: 1, t: "P", h: 0},{p: 1, t: "P", h: 0},{p: 1, t: "P", h: 0},{p: 1, t: "P", h: 0},{p: 1, t: "P", h: 0},{p: 1, t: "P", h: 0},{p: 1, t: "P", h: 0}],
-    [{p: 1, t: "R", h: 0, m: 0}, {p: 1, t: "H", h: 0},{p: 1, t: "B", h: 0},{p: 1, t: "Q", h: 0},{p: 1, t: "K", h: 0, m: 0},{p: 1, t: "B", h: 0},{p: 1, t: "H", h: 0},{p: 1, t: "R", h: 0, m: 0}]
-  ],
-  frstclick: { x: -1, y: -1, t: 0, p: 0 },
-  horseturns: [
-    [2, 1],[2, -1],[-2, 1],[-2, -1],[1, 2],[1, -2],[-1, 2],[-1, -2]
-  ],
-};
+function createState() {
+  // prettier-ignore
+  return {
+    turn: 1,
+    field: [
+      [{p: -1, t: "R", h: 0, m: 0}, {p: -1, t: "H", h: 0},{p: -1, t: "B", h: 0},{p: -1, t: "Q", h: 0},{p: -1, t: "K", h: 0, m: 0},{p: -1, t: "B", h: 0},{p: -1, t: "H", h: 0},{p: -1, t: "R", h: 0, m: 0}],
+      [{p: -1, t: "P", h: 0},{p: -1, t: "P", h: 0},{p: -1, t: "P", h: 0},{p: -1, t: "P", h: 0},{p: -1, t: "P", h: 0},{p: -1, t: "P", h: 0},{p: -1, t: "P", h: 0},{p: -1, t: "P", h: 0}],
+      [{t: "&nbsp;", h: 0}, {t: "&nbsp;", h: 0},{t: "&nbsp;", h: 0},{t: "&nbsp;", h: 0},{t: "&nbsp;", h: 0},{t: "&nbsp;", h: 0},{t: "&nbsp;", h: 0},{t: "&nbsp;", h: 0}],
+      [{t: "&nbsp;", h: 0}, {t: "&nbsp;", h: 0},{t: "&nbsp;", h: 0},{t: "&nbsp;", h: 0},{t: "&nbsp;", h: 0},{t: "&nbsp;", h: 0},{t: "&nbsp;", h: 0},{t: "&nbsp;", h: 0}],
+      [{t: "&nbsp;", h: 0}, {t: "&nbsp;", h: 0},{t: "&nbsp;", h: 0},{t: "&nbsp;", h: 0},{t: "&nbsp;", h: 0},{t: "&nbsp;", h: 0},{t: "&nbsp;", h: 0},{t: "&nbsp;", h: 0}],
+      [{t: "&nbsp;", h: 0}, {t: "&nbsp;", h: 0},{t: "&nbsp;", h: 0},{t: "&nbsp;", h: 0},{t: "&nbsp;", h: 0},{t: "&nbsp;", h: 0},{t: "&nbsp;", h: 0},{t: "&nbsp;", h: 0}],
+      [{p: 1, t: "P", h: 0}, {p: 1, t: "P", h: 0},{p: 1, t: "P", h: 0},{p: 1, t: "P", h: 0},{p: 1, t: "P", h: 0},{p: 1, t: "P", h: 0},{p: 1, t: "P", h: 0},{p: 1, t: "P", h: 0}],
+      [{p: 1, t: "R", h: 0, m: 0}, {p: 1, t: "H", h: 0},{p: 1, t: "B", h: 0},{p: 1, t: "Q", h: 0},{p: 1, t: "K", h: 0, m: 0},{p: 1, t: "B", h: 0},{p: 1, t: "H", h: 0},{p: 1, t: "R", h: 0, m: 0}]
+    ],
+    frstclick: { x: -1, y: -1, t: 0, p: 0 },
+    horseturns: [
+      [2, 1],[2, -1],[-2, 1],[-2, -1],[1, 2],[1, -2],[-1, 2],[-1, -2]
+    ],
+  };
+}
 
-function action(state, i, j) {
+function nextTurn(state, i, j) {
   if (
     state.frstclick.t == 0 &&
     state.field[i][j].t != "&nbsp;" &&
@@ -102,16 +106,42 @@ function attack(state, i, j) {
   }
 }
 
-app.get("/start", (request, response) => {
-  response.json(state);
-});
+function sendStateToClient(ws, state) {
+  ws.send(JSON.stringify({ type: "next-state", payload: { state } }));
+}
 
-app.post("/action", (request, response) => {
-  const body = request.body;
-  const i = body.i;
-  const j = body.j;
-  action(state, i, j);
-  response.json(state);
+const rooms = {};
+
+app.ws("/", (currClientWs, req) => {
+  let roomId = "";
+  currClientWs.on("message", (data) => {
+    const message = JSON.parse(data);
+    if (message.type === "open-room") {
+      roomId = message.payload.roomId;
+      let room = rooms[roomId];
+      if (!room) {
+        room = { state: createState(), clients: [] };
+        rooms[roomId] = room;
+      }
+      if (room.clients.length < 2) {
+        room.clients.push(currClientWs);
+        sendStateToClient(currClientWs, room.state);
+      }
+    } else if (message.type === "next-turn") {
+      const room = rooms[roomId];
+      nextTurn(room.state, message.payload.i, message.payload.j);
+      room.clients.forEach((clientWs) => {
+        sendStateToClient(clientWs, room.state);
+      });
+    }
+  });
+
+  currClientWs.on("close", () => {
+    if (!roomId) return;
+    rooms[roomId].clients = rooms[roomId].clients.filter((clientWs) => {
+      return currClientWs !== clientWs;
+    });
+  });
 });
 
 app.listen(port, () => {
