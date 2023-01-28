@@ -128,6 +128,7 @@ app.ws("/", (currClientWs, req) => {
         sendStateToClient(currClientWs, room.state);
       }
     } else if (message.type === "next-turn") {
+      if (!roomId) return;
       const room = rooms[roomId];
       nextTurn(room.state, message.payload.i, message.payload.j);
       room.clients.forEach((clientWs) => {
