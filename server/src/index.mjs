@@ -39,6 +39,7 @@ function createState() {
     horseturns: [
       [2, 1],[2, -1],[-2, 1],[-2, -1],[1, 2],[1, -2],[-1, 2],[-1, -2]
     ],
+    pd: { i: -1, j:-1 },
   };
 }
 
@@ -64,12 +65,12 @@ function nextTurn(state, i, j) {
       rook(state, i, j);
     } else if (state.field[i][j].t == "B") {
       bishop(state, i, j);
+    } else if (state.field[i][j].t == "H") {
+      horse(state, i, j);
     } else if (state.field[i][j].t == "P" && state.field[i][j].p == "1") {
       whitepawn(state, i, j);
     } else if (state.field[i][j].t == "P" && state.field[i][j].p == "-1") {
       blackpawn(state, i, j);
-    } else if (state.field[i][j].t == "H") {
-      horse(state, i, j);
     }
   } else {
     attack(state, i, j);
@@ -77,10 +78,24 @@ function nextTurn(state, i, j) {
 }
 
 function attack(state, i, j) {
-  if (state.field[i][j].h == 1 || state.field[i][j].h == 3) {
+  if (
+    state.field[i][j].h == 1 ||
+    state.field[i][j].h == 3 ||
+    state.field[i][j].h == 10
+  ) {
+    if (state.field[i][j].h == 3 && state.pd.i == i && state.pd.j == j) {
+      state.field[state.frstclick.x][j] = { t: "&nbsp;" };
+    }
+    state.pd.j = 0;
+    state.pd.i = 0;
     if (state.frstclick.m === 0) {
       state.field[state.frstclick.x][state.frstclick.y].m = 1;
     }
+    if (state.field[i][j].h == 10) {
+      state.pd.j = j;
+      state.pd.i = i + state.turn;
+    }
+
     state.field[i][j] = state.field[state.frstclick.x][state.frstclick.y];
     state.field[state.frstclick.x][state.frstclick.y] = { t: "&nbsp;" };
     state.turn = state.turn * -1;

@@ -14,6 +14,14 @@ function onWebSocketOpen(event) {
   sendOpenRoom(roomId);
 }
 
+function sendNextTurn(i, j) {
+  ws.send(JSON.stringify({ type: "next-turn", payload: { i, j } }));
+}
+
+function sendOpenRoom(roomId) {
+  ws.send(JSON.stringify({ type: "open-room", payload: { roomId } }));
+}
+
 function onMessageFromServer(event) {
   const message = JSON.parse(event.data);
   if (message.type === "next-state") {
@@ -29,10 +37,16 @@ function renderfield(state) {
       const td = document.createElement("td");
       if (i % 2 != j % 2 && state.field[i][j].h == 0) {
         td.classList.add("black");
-      } else if (i % 2 != j % 2 && state.field[i][j].h == 1) {
+      } else if (
+        i % 2 != j % 2 &&
+        (state.field[i][j].h == 1 || state.field[i][j].h == 10)
+      ) {
         td.classList.add("hoveredblack");
       }
-      if (i % 2 == j % 2 && state.field[i][j].h == 1) {
+      if (
+        i % 2 == j % 2 &&
+        (state.field[i][j].h == 1 || state.field[i][j].h == 10)
+      ) {
         td.classList.add("hoveredwhite");
       }
       if (state.field[i][j].h == 2) {
@@ -66,12 +80,4 @@ function renderfield(state) {
     table.style.width = document.documentElement.clientWidth;
     table.style.height = document.documentElement.clientWidth;
   }
-}
-
-function sendNextTurn(i, j) {
-  ws.send(JSON.stringify({ type: "next-turn", payload: { i, j } }));
-}
-
-function sendOpenRoom(roomId) {
-  ws.send(JSON.stringify({ type: "open-room", payload: { roomId } }));
 }
