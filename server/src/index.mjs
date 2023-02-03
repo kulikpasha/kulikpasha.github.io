@@ -19,7 +19,9 @@ app.use(cors());
 app.use(express.static("static"));
 expressWs(app);
 
-const port = 3000;
+const port = process.env.PORT || 3000;
+// const port = 3000;
+console.log(port);
 
 function createState() {
   // prettier-ignore
