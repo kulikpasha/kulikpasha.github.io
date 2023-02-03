@@ -4,7 +4,8 @@ table.cellPadding = 0;
 table.cellSpacing = 0;
 
 // const ws = new WebSocket("wss://bf43-180-254-226-99.ngrok.io");
-const ws = new WebSocket("ws://localhost:3000");
+// const ws = new WebSocket("ws://localhost:3000");
+const ws = new WebSocket("wss://kulikpashachess.onrender.com");
 
 ws.addEventListener("open", onWebSocketOpen);
 ws.addEventListener("message", onMessageFromServer);
